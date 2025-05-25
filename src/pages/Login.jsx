@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { login } from "../utils";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { LanguageContext } from "../context/LanguageContext";
+import lang from "../lang";
 import "../styles/variables.css";
 import "../styles/Login.css";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -12,6 +14,7 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login: authLogin } = useAuth();
+  const { language } = useContext(LanguageContext);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,16 +40,16 @@ function Login() {
 
   return (
     <div className="login-container">
-      <h1>Login</h1>
+      <h1>{lang[language].login}</h1>
       {error && <p className="error-message">{error}</p>}
       <form onSubmit={handleSubmit} className="login-form">
         <div className="form-group">
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email">{lang[language].email}</label>
           <input
             id="email"
             type="email"
             name="email"
-            placeholder="Enter your email"
+            placeholder={lang[language].email}
             value={form.email}
             onChange={handleChange}
             required
@@ -54,12 +57,12 @@ function Login() {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="password">Password</label>
+          <label htmlFor="password">{lang[language].password}</label>
           <input
             id="password"
             type="password"
             name="password"
-            placeholder="Enter your password"
+            placeholder={lang[language].password}
             value={form.password}
             onChange={handleChange}
             required
@@ -67,11 +70,16 @@ function Login() {
           />
         </div>
         <button type="submit" disabled={isLoading}>
-          {isLoading ? <span style={{display:'flex',alignItems:'center',gap:'0.5em'}}><span>Logging in...</span><span style={{width:20,height:20}}><LoadingSpinner /></span></span> : "Login"}
+          {isLoading ? (
+            <span style={{display:'flex',alignItems:'center',gap:'0.5em'}}>
+              <span>{lang[language].loggingIn}</span>
+              <span style={{width:20,height:20}}><LoadingSpinner /></span>
+            </span>
+          ) : lang[language].login}
         </button>
       </form>
       <p className="register-link">
-        Don't have an account? <Link to="/register">Register here</Link>
+        {lang[language].dontHaveAccount} <Link to="/register">{lang[language].registerHere}</Link>
       </p>
     </div>
   );

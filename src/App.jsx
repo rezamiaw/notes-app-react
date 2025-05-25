@@ -18,9 +18,25 @@ import { ThemeProvider, ThemeContext } from "./context/ThemeContext";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { LanguageProvider, LanguageContext } from "./context/LanguageContext";
 import lang from "./lang";
+import LoadingSpinner from "./components/LoadingSpinner";
 
 const PrivateRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        background: 'var(--background-color)'
+      }}>
+        <LoadingSpinner />
+      </div>
+    );
+  }
+  
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
