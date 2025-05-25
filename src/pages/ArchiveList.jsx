@@ -1,9 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getArchivedNotes } from '../utils/local-data';
+import { getArchivedNotes } from '../utils';
 
 function ArchiveList() {
-  const notes = getArchivedNotes();
+  const [notes, setNotes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchArchivedNotes() {
+      try {
+        const response = await getArchivedNotes();
+        setNotes(response.data);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchArchivedNotes();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <main>

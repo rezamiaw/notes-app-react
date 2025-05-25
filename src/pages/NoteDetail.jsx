@@ -1,29 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate, Navigate } from 'react-router-dom';
-import { getNote, deleteNote, archiveNote, unarchiveNote } from '../utils/local-data';
+import { getNoteDetail, deleteNote, archiveNote, unarchiveNote } from '../utils';
 import { FiTrash2, FiArchive, FiInbox } from 'react-icons/fi';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 function NoteDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const note = getNote(id);
+  const [note, setNote] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  if (!note) {
-    return <Navigate to="/404" replace />;
-  }
+  useEffect(() => {
+    async function fetchNote() {
+      try {
+        const response = await getNoteDetail(id);
+        setNote(response.data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchNote();
+  }, [id]);
 
-  const handleDelete = () => {
-    deleteNote(id);
+  if (loading) return <LoadingSpinner />;
+  if (error || !note) return <Navigate to="/404" replace />;
+
+  const handleDelete = async () => {
+    await deleteNote(id);
     navigate('/');
   };
 
-  const handleArchive = () => {
-    archiveNote(id);
+  const handleArchive = async () => {
+    await archiveNote(id);
     navigate('/');
   };
 
-  const handleUnarchive = () => {
-    unarchiveNote(id);
+  const handleUnarchive = async () => {
+    await unarchiveNote(id);
     navigate('/');
   };
 
