@@ -24,16 +24,24 @@ export const AuthProvider = ({ children }) => {
           return;
         }
 
-
-        await getNotes();
-        setIsAuthenticated(true);
-        setUser(JSON.parse(userData));
-      } catch (error) {
- 
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("userData");
-        setIsAuthenticated(false);
-        setUser(null);
+        // Validasi token ke server, tapi hanya logout jika error 401 (token tidak valid)
+        try {
+          await getNotes();
+          setIsAuthenticated(true);
+          setUser(JSON.parse(userData));
+        } catch (error) {
+          // Jika error 401 (token tidak valid/expired), logout
+          if (error && error.status === 401) {
+            localStorage.removeItem("authToken");
+            localStorage.removeItem("userData");
+            setIsAuthenticated(false);
+            setUser(null);
+          } else {
+            // Jika error lain (misal: jaringan), tetap anggap user login
+            setIsAuthenticated(true);
+            setUser(JSON.parse(userData));
+          }
+        }
       } finally {
         setIsLoading(false);
       }
